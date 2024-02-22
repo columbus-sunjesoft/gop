@@ -32,11 +32,12 @@ Ant:          Apache Ant(TM) version 1.10.11 compiled on July 10 2021
 JVM:          17.0.6 (Oracle Corporation 17.0.6+9-LTS-190)
 OS:           Mac OS X 13.2.1 x86_64
 ```
-## 시작하기: 
+
+## install
 소스를 받아서 컴파일 합니다.
 
 ```
-$ git clone https://github.com/exgoya/gop.git
+$ git clone https://github.com/columbus-sunjesoft/gop.git
 'gop'에 복제합니다...
 remote: Enumerating objects: 406, done.
 remote: Counting objects: 100% (68/68), done.
@@ -48,7 +49,37 @@ remote: Total 406 (delta 33), reused 35 (delta 0), pack-reused 338
 $ cd gop
 
 $ ls
-README.md       gop             data            gradle          gradlew         gradlew.bat     settings.gradle
+README.md     create_stacker.sh    gop.tar    gradle    gradlew    gradlew.bat  settings.gradle    source
+
+$ tar -xf gop.tar
+
+$ ls
+README.md     create_stacker.sh    gop    gop.tar    gradle    gradlew    gradlew.bat  settings.gradle    source
+
+$ cd  gop
+
+$ ls
+bin  data  lib
+```
+
+## start 
+  
+```
+% ./bin/gop -config data/config.json -demon
+Current dir : /home/test/gop/gop
+Source jdbc url : jdbc:goldilocks://localhost:22581/
+Write file : true
+Write file path : data/
+Write stacker : false
+Write stacker : http://192.168.0.120:5108/dbs/
+Write stacker db name: gop
+
+                     time          exec       optdata       session     g-session          peer          lock       long_Tx
+"2023-03-02 16:26:27.537"         78690           811             1             0             0             0             0
+```
+
+### build
+```
 $ ./gradlew build
 
 BUILD SUCCESSFUL in 4s
@@ -77,32 +108,10 @@ Archive:  gop.zip
    creating: gop/bin/
   inflating: gop/bin/gop             
   inflating: gop/bin/gop.bat         
-
-$ cd gop
-$ mkdir data
-$ cp ~/git/gop/data/config.json ./data
-$ ls
-bin     data    lib
-
-```
-  
-## start 
-  
-```
-% ./bin/gop -config data/config.json -demon
-Current dir : /Users/exgoya/git/gop/gop/build/distributions/gop
-Source jdbc url : jdbc:goldilocks://192.168.0.120:30009/
-Write file : true
-Write file path : data/
-Write stacker : true
-Write stacker : http://192.168.0.120:5108/dbs/
-Write stacker db name: gop
-
-                     time          exec       optdata       session     g-session          peer          lock       long_Tx
-"2023-03-02 16:26:27.537"         78690           811             1             0             0             0             0
 ```
 
-#### Help
+
+### Help
  
 ~~~
 $ java -jar gop.jar -help
@@ -125,12 +134,15 @@ $ java -jar gop.jar -help
 
 ## Config
 
-config 명세  
+#### config 명세  
 
 ~~~
 
 setting : 설정
-	jdbcSource : DB 접속 정보 
+url(String) : DB 접속 정보 (host:port)  
+	dbname(String) :  gop   
+	driverClass(String) : "sunje.goldilocks.jdbc.GoldilocksDriver"
+	jdbcProperties : DB id, password
 	timeInterval : monitoring time interval  
 	consolePrint : print monitoring log  
 	pagesize : print column header between row  
@@ -151,13 +163,21 @@ measure
 
 ~~~
 
-config sample
+#### alert policy :
+- 0 : not use ( default )
+- 1 : is greater then alertValue ( query result > alertValue )
+- 2 : is less then alertValue ( query result < alertValue )
+- 3 : equal to alertValue ( query result = alertValue )
+
+
+
+#### config sample
 
 ```
 {
 	"setting": {
 		"jdbcSource" : {
-			"url":"jdbc:goldilocks://192.168.0.120:30009/",
+			"url":"jdbc:goldilocks://localhost:22581/",
 			"dbName": "gop",
 			"driverClass":"sunje.goldilocks.jdbc.GoldilocksDriver",
 			"jdbcProperties":[
@@ -253,8 +273,3 @@ config sample
 
 ```
 
-## alert policy :
-- 0 : not use ( default )
-- 1 : is greater then alertValue ( query result > alertValue )
-- 2 : is less then alertValue ( query result < alertValue )
-- 3 : equal to alertValue ( query result = alertValue )
